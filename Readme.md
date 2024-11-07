@@ -1,4 +1,4 @@
-# Automation Friendly ImageSetConfiguration Mirroring
+# Automation Friendly ImageSet Mirroring
 
 ## Mirroring
 
@@ -11,7 +11,7 @@
 
 ### Running
 
-./imageset-mirror.sh <DIR_SOURCE_ISC_MANIFESTS> <REPO_URL>
+./imageset-mirror.sh <DIR_SOURCE_IS_MANIFESTS> <REPO_URL>
 
 ```
 # check target state registry
