@@ -4,6 +4,8 @@ _D1=${DATE:-$(date +%Y%m%d)}
 
 _DP_SOURCE_IS_MANIFESTS=$1
 _REPO_URL=$2
+_DP_METADATA=/data2/oc-mirror/oc-mirror-metadata
+_DP_OC_MIRROR_WORKSPACE=oc-mirror-workspace
 
 _J0=
 
@@ -22,7 +24,7 @@ read -d '' -r _J_IS <<EOF
     "apiVersion": "mirror.openshift.io/v1alpha2",
     "storageConfig": {
       "local": {
-        "path": "/tmp/oc-mirror-metadata"
+        "path": "${_DP_METADATA}"
       }
     },
     "archiveSize": 4,
@@ -38,18 +40,34 @@ jq ".mirror.operators += ${_J0b}" <<<$_J_IS  > $_DP_TMP/imagesetconfiguration.ya
 
 _FP_IS=$_DP_TMP/imagesetconfiguration.yaml
 
-_DP_STORAGE=${DP_STORAGE:-/tmp/dp_storage}
+_DP_STORAGE=${DP_STORAGE:-/data2/oc-mirror/dp_storage}
 
-[[ ! -d $_DP_STORAGE ]] && mkdir -p $_DP_STORAGE
+#for i in $_DP_METADATA $_DP_STORAGE $_DP_OC_MIRROR_WORKSPACE; do
+#  if [[ ! $DRYRUN ]]; then
+#    [[ -d $i ]] && rm -rf $i
+#    mkdir -p $i
+#  fi
+#done
 
 echo "ImageSetConfiguration:"
 
-cat $_FP_IS
+jq . $_FP_IS
+read -t 4 -p ..
 
-echo "oc-mirror -c ${_FP_IS}  file://${_DP_STORAGE}"
-read -p ..
-oc-mirror -c ${_FP_IS}  file://${_DP_STORAGE} 
+#echo "oc-mirror -c ${_FP_IS} --skip-image-pin  file://${_DP_STORAGE}"
+#[[ ! $DRYRUN ]] &&
+#oc-mirror -c ${_FP_IS} --skip-image-pin file://${_DP_STORAGE} 
+echo "oc-mirror -c ${_FP_IS} file://${_DP_STORAGE}"
+[[ ! $DRYRUN ]] &&
+time oc-mirror -c ${_FP_IS} file://${_DP_STORAGE} 
 
-echo "oc-mirror --from ./${_DP_STORAGE} --skip-image-pin --skip-cleanup --skip-metadata-check --skip-missing --skip-pruning docker://$_REPO_URL/$_D1"
+if [[ $? -eq 0 ]]; then
+  echo "return: 0"
+else
+  echo "return: 1"
+fi
 
-oc-mirror --from ./${_DP_STORAGE} --skip-image-pin --skip-cleanup --skip-metadata-check --skip-missing --skip-pruning docker://$_REPO_URL/$_D1
+read -t 4 -p ..
+echo "oc-mirror --from ${_DP_STORAGE} --skip-cleanup --skip-metadata-check --skip-pruning docker://$_REPO_URL"
+[[ ! $DRYRUN ]] &&
+time oc-mirror --from ${_DP_STORAGE} --skip-cleanup --skip-metadata-check --skip-pruning docker://$_REPO_URL
