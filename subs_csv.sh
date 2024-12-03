@@ -15,11 +15,12 @@ p_svr() {
 
   # p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS
   # p_svr /tmp/tmp.FQxAt2aiRZ  https://api.xxx.lan:6443 <user> <password>
-  #
-  local _DP_TMP=$1
-  local _LOGIN_URL=$2
-  local _OCP_USER=$3
-  local _PASS=$4
+
+  local -n _SUB_CH_LOCAL=$1
+  local _DP_TMP=$2
+  local _LOGIN_URL=$3
+  local _OCP_USER=$4
+  local _PASS=$5
 
   if [[ $_PASS ]]; then
    oc login --server=${_LOGIN_URL} -u ${_OCP_USER} -p ${_PASS}
@@ -56,19 +57,12 @@ p_svr() {
 
     _VERSION=$(jq -r ".status.channels[]|select((.name==\"$_CHANNEL\") and (.currentCSV==\"$_INSTALLED_CSV\"))|.currentCSVDesc.version" <<<$_J2)
 
-    _SUB_CH_TMP[$_PKG_NAME@$_CHANNEL]+="$_VERSION "
+    _SUB_CH_LOCAL[$_PKG_NAME@$_CHANNEL]+="$_VERSION "
 
   done
 
-  echo "_SUB_CH_TMP:"
-  echo ${!_SUB_CH_TMP[@]}
-  echo ${_SUB_CH_TMP[@]}
-
-  [[ ! $_NO_LOGOUT ]] && oc logout
-
 }
 
-declare -A _SUB_CH_TMP
 
 _OCP_USER=$OCP_USER
 _SVRS=$SVRS
@@ -93,12 +87,21 @@ _L_SVRS=($(tr , ' ' <<<${_SVRS}))
   
 _DP_TMP=$(mktemp -d)
 
+declare -A _SUB_CH
+
 for svr in ${_L_SVRS[@]}; do
 
   echo "Processing $svr"
   _LOGIN_URL="https://api.${svr}:6443"
   echo "p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS"
-  p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS
+  p_svr _SUB_CH $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS
+
+  echo "_SUB_CH:"
+  for i in ${!_SUB_CH[@]}; do
+    echo "$i: ${_SUB_CH[$i]}"
+  done
+
+  [[ ! $_NO_LOGOUT ]] && oc logout
 
   #python ./subs_csv.py ${_DP_TMP}
 
