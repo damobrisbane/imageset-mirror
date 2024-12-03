@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo -ne "******* mirror.sh ********\n"
+
 _DP_MANIFESTS=${DP_MANIFESTS:-manifests}
 
 _REPO_URL=$1

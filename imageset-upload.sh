@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo -ne "\n******* imageset-upload.sh ********\n"
+
 _D1=$1
 _REPO_URL=$2
 _DP_STORAGE=${DP_STORAGE:-dp_storage}
@@ -11,7 +13,7 @@ echo "oc-mirror --from ${_DP_STORAGE} --skip-metadata-check --skip-pruning docke
 
 [[ ! $DRYRUN ]] &&
 #time oc-mirror --from ${_DP_STORAGE} --skip-cleanup --skip-metadata-check --skip-pruning docker://$_REPO_URL
-time oc-mirror --from ${_DP_STORAGE} --skip-metadata-check --skip-pruning docker://$_REPO_URL
+time oc-mirror --from ${_DP_STORAGE} --skip-metadata-check --skip-pruning docker://$_REPO_URL/$_D1
 
 [[ ! $DRYRUN ]] &&
 [[ -d /tmp/oc-mirror/${_D1}/results ]] && rm -rf /tmp/oc-mirror/${_D1}/results

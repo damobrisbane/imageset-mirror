@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo -ne "\n******* imageset-mirror.sh ********\n"
 
 _D1=$1
 _DP_SOURCE_IS_MANIFESTS=$2
