@@ -37,8 +37,6 @@ p_svr() {
   IFS=$'\n'
   L1=($(oc get subs -A -o go-template='{{range .items}}{{.metadata.namespace}} {{.metadata.name}} {{.spec.name}}{{"\n"}}{{end}}'))
 
-  echo "L1: (${#L1[@]}) ${L1[@]}"
-
   for l in ${L1[@]}; do
 
     IFS=$' \r\n'
@@ -46,13 +44,11 @@ p_svr() {
 
     echo "processing $_NS $_SUBS_NAME $_PKG_NAME" 1>&2
 
-    echo "_J1=\$(oc get subs $_SUBS_NAME -n $_NS -o json)"
     _J1=$(oc get subs $_SUBS_NAME -n $_NS -o json)
 
     _CHANNEL=$(jq -r .spec.channel <<<$_J1)
     _INSTALLED_CSV=$(jq -r .status.installedCSV <<<$_J1)
 
-    echo "\$(oc get packagemanifest $_PKG_NAME -n openshift-marketplace -o json)"
     _J2=$(oc get packagemanifest $_PKG_NAME -n openshift-marketplace -o json)
 
     _VERSION=$(jq -r ".status.channels[]|select((.name==\"$_CHANNEL\") and (.currentCSV==\"$_INSTALLED_CSV\"))|.currentCSVDesc.version" <<<$_J2)
@@ -93,7 +89,7 @@ for svr in ${_L_SVRS[@]}; do
 
   echo "Processing $svr"
   _LOGIN_URL="https://api.${svr}:6443"
-  echo "p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS"
+  echo "p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER xxxxx"
   p_svr _SUB_CH $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS
 
   echo "_SUB_CH:"
