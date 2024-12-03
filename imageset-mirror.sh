@@ -10,7 +10,6 @@ _J0=
 [[ -d $_DP_METADATA ]] && rm -rf $_DP_METADATA
 mkdir $_DP_METADATA
 
-
 _DP_OC_MIRROR=/tmp/oc-mirror/$_D1
 [[ -d $_DP_OC_MIRROR ]] && rm -rf $_DP_OC_MIRROR
 mkdir -p $_DP_OC_MIRROR

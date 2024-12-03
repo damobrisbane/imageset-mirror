@@ -12,5 +12,5 @@ read -t 4 -p ..
 $_SCRIPT_DIR/imageset-mirror.sh $_D1 $_DP_MANIFESTS
 
 echo "$_SCRIPT_DIR/imageset-upload.sh $_D1 $_REPO_URL"
-read  -t 4-p ..
+read -t 4 -p ..
 $_SCRIPT_DIR/imageset-upload.sh $_D1 $_REPO_URL
