@@ -1,13 +1,19 @@
 #!/bin/sh
 
-_D1=${DATE:-$(date +%Y%m%d)}
 
-_DP_SOURCE_IS_MANIFESTS=$1
-_REPO_URL=$2
-_DP_METADATA=/data2/oc-mirror/oc-mirror-metadata
-_DP_OC_MIRROR_WORKSPACE=oc-mirror-workspace
+_D1=$1
+_DP_SOURCE_IS_MANIFESTS=$2
+_DP_METADATA=oc-mirror-metadata
 
 _J0=
+
+[[ -d $_DP_METADATA ]] && rm -rf $_DP_METADATA
+mkdir $_DP_METADATA
+
+
+_DP_OC_MIRROR=/tmp/oc-mirror/$_D1
+[[ -d $_DP_OC_MIRROR ]] && rm -rf $_DP_OC_MIRROR
+mkdir $_DP_OC_MIRROR
 
 for _j in $(find $_DP_SOURCE_IS_MANIFESTS -type f); do
 
@@ -34,40 +40,32 @@ read -d '' -r _J_IS <<EOF
   }
 EOF
 
-_DP_TMP=$(mktemp -d)
+jq ".mirror.operators += ${_J0b}" <<<$_J_IS  > $_DP_OC_MIRROR/imagesetconfiguration.yaml
 
-jq ".mirror.operators += ${_J0b}" <<<$_J_IS  > $_DP_TMP/imagesetconfiguration.yaml
+_FP_IS=$_DP_OC_MIRROR/imagesetconfiguration.yaml
 
-_FP_IS=$_DP_TMP/imagesetconfiguration.yaml
+_DP_STORAGE=${DP_STORAGE:-dp_storage}
 
-_DP_STORAGE=${DP_STORAGE:-/data2/oc-mirror/dp_storage}
-
-#for i in $_DP_METADATA $_DP_STORAGE $_DP_OC_MIRROR_WORKSPACE; do
-#  if [[ ! $DRYRUN ]]; then
-#    [[ -d $i ]] && rm -rf $i
-#    mkdir -p $i
-#  fi
-#done
+[[ -d $_DP_STORAGE ]] && rm -rf $_DP_STORAGE
+mkdir -p $_DP_STORAGE
 
 echo "ImageSetConfiguration:"
 
 jq . $_FP_IS
 read -t 4 -p ..
 
-#echo "oc-mirror -c ${_FP_IS} --skip-image-pin  file://${_DP_STORAGE}"
-#[[ ! $DRYRUN ]] &&
-#oc-mirror -c ${_FP_IS} --skip-image-pin file://${_DP_STORAGE} 
 echo "oc-mirror -c ${_FP_IS} file://${_DP_STORAGE}"
 [[ ! $DRYRUN ]] &&
 time oc-mirror -c ${_FP_IS} file://${_DP_STORAGE} 
 
 if [[ $? -eq 0 ]]; then
-  echo "return: 0"
+  exit 0
 else
-  echo "return: 1"
+  echo "FYI, the following mirroring files (registry upload .tar) have been found:"
+  find $_DP_STORAGE -name "*.tar"
 fi
+  
 
-read -t 4 -p ..
-echo "oc-mirror --from ${_DP_STORAGE} --skip-cleanup --skip-metadata-check --skip-pruning docker://$_REPO_URL"
-[[ ! $DRYRUN ]] &&
-time oc-mirror --from ${_DP_STORAGE} --skip-cleanup --skip-metadata-check --skip-pruning docker://$_REPO_URL
+
+
+

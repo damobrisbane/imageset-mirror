@@ -1,8 +1,16 @@
 {
   "catalog": "registry.redhat.io/redhat/certified-operator-index:v4.14",
   "packages": [
+    { "name": "gitlab-runner-operator" },
     {
-      "name": "gitlab-runner-operator"
+      "name": "percona-postgresql-operator-certified",
+      "channels": [
+        { "name": "preview",
+          "minVersion": "2.3.1"
+        },
+        { "name": "stable"
+        }
+      ]
     }
   ]
 }

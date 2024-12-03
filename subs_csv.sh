@@ -1,7 +1,7 @@
 #!/bin/bash
 
-function sort_list() {
-  loacl -n _l2=$1
+function sorted0() {
+  local -n _l2=$1
 
   oIFS=$IFS IFS=$' \r\n'
   local sorted_list=($(echo "${_l2[@]}" | tr " " "\n" | sort -nu))
@@ -42,7 +42,7 @@ p_svr() {
     IFS=$' \r\n'
     read _NS _SUBS_NAME _PKG_NAME <<<${l[@]}
 
-    echo "processing $_NS $_SUBS_NAME $_PKG_NAME" 1>&2
+    #echo "processing $_NS $_SUBS_NAME $_PKG_NAME" 1>&2
 
     _J1=$(oc get subs $_SUBS_NAME -n $_NS -o json)
 
@@ -87,12 +87,11 @@ declare -A _SUB_CH
 
 for svr in ${_L_SVRS[@]}; do
 
-  echo "Processing $svr"
+  #echo "Processing $svr"
   _LOGIN_URL="https://api.${svr}:6443"
   echo "p_svr $_DP_TMP  $_LOGIN_URL $_OCP_USER xxxxx"
   p_svr _SUB_CH $_DP_TMP  $_LOGIN_URL $_OCP_USER $_PASS
 
-  echo "_SUB_CH:"
   for i in ${!_SUB_CH[@]}; do
     echo "$i: ${_SUB_CH[$i]}"
   done
