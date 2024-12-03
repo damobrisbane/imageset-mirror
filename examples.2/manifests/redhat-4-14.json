@@ -1,0 +1,14 @@
+{
+  "catalog": "registry.redhat.io/redhat/redhat-operator-index:v4.14",
+  "packages": [
+    {
+      "name": "local-storage-operator"
+    },
+    {
+      "name": "submariner"
+    },
+    {
+      "name": "skupper-operator"
+    }
+  ]
+}

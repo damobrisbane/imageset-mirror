@@ -1,0 +1,8 @@
+{
+  "catalog": "registry.redhat.io/redhat/certified-operator-index:v4.14",
+  "packages": [
+    {
+      "name": "gitlab-runner-operator"
+    }
+  ]
+}
