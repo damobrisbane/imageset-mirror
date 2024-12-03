@@ -13,7 +13,7 @@ mkdir $_DP_METADATA
 
 _DP_OC_MIRROR=/tmp/oc-mirror/$_D1
 [[ -d $_DP_OC_MIRROR ]] && rm -rf $_DP_OC_MIRROR
-mkdir $_DP_OC_MIRROR
+mkdir -p $_DP_OC_MIRROR
 
 for _j in $(find $_DP_SOURCE_IS_MANIFESTS -type f); do
 
