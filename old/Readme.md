@@ -1,4 +1,8 @@
-# Automation Friendly ImageSet Mirroring
+# Automation Focused ImageSet Mirroring
+
+Appliance [imageset_mirror] > [imageset_upload] Feeder > Cluster
+
+Cluster [subs_csv] > [manifests] Appliance 
 
 ## Mirroring
 
